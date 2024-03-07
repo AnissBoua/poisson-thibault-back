@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'quickstart.apps.QuickstartConfig',
     'corsheaders',
+    'rest_framework_simplejwt',
 ]
+
+AUTH_USER_MODEL = "quickstart.User"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -129,3 +132,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )  
+}

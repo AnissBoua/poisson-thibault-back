@@ -21,6 +21,11 @@ S'il ne sont pas deja installer il faut installé :
 pip install django djangorestframework
 ```
 
+Installer aussi les dependance avec : 
+``` bash
+pip install -r requirements.txt
+```
+
 Ensuite il faut lancer les migration :
 ``` bash
 python manage.py migrate
