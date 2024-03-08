@@ -4,14 +4,23 @@ from quickstart.models import Produit
 from quickstart.serializer.produit import ProduitSerializer
 import json
 from django.core import serializers
+from math import ceil
 
 class CrustaceList(APIView):
     def get(self, request, format=None):
         limit = request.GET.get('limit', 10)
         page = request.GET.get('page', 1)
-        crustaces = Produit.objects.filter(category=3)[(int(page) - 1) * int(limit):int(page) * int(limit)]
-        crustaces = ProduitSerializer(crustaces, many=True).data
-        return Response(crustaces)
+        crustaces = Produit.objects.filter(category=3)
+        total = crustaces.count()
+        crustaces = crustaces[(int(page) - 1) * int(limit):int(page) * int(limit)]
+        res = {
+            'data': ProduitSerializer(crustaces, many=True).data,
+            'total': total,
+            'limit': limit,
+            'page': page,
+            'last': ceil(total / int(limit))
+        }
+        return Response(res)
     
 class CrustaceDetail(APIView):
     def get(self, request, pk, format=None):
