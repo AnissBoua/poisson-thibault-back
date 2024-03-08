@@ -9,8 +9,6 @@ class Transaction(models.Model):
         ACHAT = 'achat'
     type = models.CharField(max_length=100, choices=Type.choices, default=Type.VENTE)
 
-    productsJson = models.TextField()
-    produits = models.ManyToManyField('Produit', related_name='transactions')
     dateValidation = models.DateTimeField()
     total = models.FloatField()
     dateAjout = models.DateTimeField(auto_now_add=True)
