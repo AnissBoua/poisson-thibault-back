@@ -7,8 +7,9 @@ from rest_framework_simplejwt.views import (
 from quickstart.view.auth import Register
 
 urlpatterns = [
-    path('produits/', ProduitList.as_view()),
-    path('produit/<int:pk>/', ProduitDetail.as_view()),
+    path('produits/', ProduitEndpoints.as_view()),
+    path('produits/<int:pk>/', ProduitEndpoints.as_view()),
+    path('produits/updates/', ProduitsUpdates.as_view()),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/register/', Register.as_view(), name='register-api'),
