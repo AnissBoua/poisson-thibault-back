@@ -40,24 +40,36 @@ class CAService():
 
         return cas
     
-    def getTransactionProduitsBy(startStr, endStr, category=None, Produit=None):
-        if(startStr != endStr):
-            startStr = datetime.strptime(startStr, "%Y-%m-%d")
-            startStr = startStr - timedelta(days=1)
-            endStr = datetime.strptime(endStr, "%Y-%m-%d")
-            endStr = endStr + timedelta(days=1)
+    def getTransactionProduitsBy(start_str, end_str, category=None, produit=None, sale=False):
+        if start_str != end_str:
+            start_date = datetime.strptime(start_str, "%Y-%m-%d") - timedelta(days=1)
+            end_date = datetime.strptime(end_str, "%Y-%m-%d") + timedelta(days=1)
+
+            base_query = {
+                'transaction__type': "vente",
+                'transaction__dateValidation__range': [start_date, end_date],
+            }
+
             if category:
-                transactionProduits = TransactionProduit.objects.filter(transaction__type="vente",transaction__dateValidation__range=[startStr,endStr], produit__category__nom=category)
-            elif Produit:
-                transactionProduits = TransactionProduit.objects.filter(transaction__type="vente",transaction__dateValidation__range=[startStr,endStr], produit__nom=Produit)
-            else:
-                transactionProduits = TransactionProduit.objects.filter(transaction__type="vente", transaction__dateValidation__range=[startStr, endStr])
-            return transactionProduits
+                base_query['produit__category__nom'] = category
+            elif produit:
+                base_query['produit__nom'] = produit
+            if sale:
+                base_query['prixSolde__isnull'] = False
+            transaction_produits = TransactionProduit.objects.filter(**base_query)
         else:
+            base_query = {
+                'transaction__type': "vente",
+                'transaction__dateValidation__date': start_str,
+            }
+
             if category:
-                transactionProduits = TransactionProduit.objects.filter(transaction__type="vente",transaction__dateValidation__date=startStr, produit__category__nom=category)
-            elif Produit:
-                transactionProduits = TransactionProduit.objects.filter(transaction__type="vente",transaction__dateValidation__date=startStr, produit__nom=Produit)
-            else:
-                transactionProduits = TransactionProduit.objects.filter(transaction__type="vente", transaction__dateValidation__date=startStr)
-            return transactionProduits
+                base_query['produit__category__nom'] = category
+            elif produit:
+                base_query['produit__nom'] = produit
+            if sale:
+                base_query['prixSolde__isnull'] = False
+                
+            transaction_produits = TransactionProduit.objects.filter(**base_query)
+        
+        return transaction_produits

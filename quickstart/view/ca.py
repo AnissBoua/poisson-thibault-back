@@ -11,12 +11,18 @@ class CAEndpoints(APIView):
         endStr = request.GET.get('end')
         category = request.GET.get('category')
         produit = request.GET.get('produit')
+        sale = request.GET.get('sale')
+
+        params = {'start_str': startStr, 'end_str': endStr}
+
         if category:
-            transactionProduits = CAService.getTransactionProduitsBy(startStr, endStr, category=category)
-        elif produit:
-            transactionProduits = CAService.getTransactionProduitsBy(startStr, endStr, Produit=produit)
-        else:
-            transactionProduits = CAService.getTransactionProduitsBy(startStr, endStr)
+            params['category'] = category
+        if produit:
+            params['Produit'] = produit
+        if sale:
+            params['sale'] = True
+
+        transactionProduits = CAService.getTransactionProduitsBy(**params)
                 
         cas = CAService.getCA(transactionProduits, startStr, endStr)
         
