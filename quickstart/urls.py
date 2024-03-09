@@ -20,4 +20,5 @@ urlpatterns = [
     path('produits/fruitsDeMer', FruitDeMerList.as_view()),
     path('produits/fruitDeMer/<int:pk>/', FruitDeMerDetail.as_view()),
     path('ca/', CAEndpoints.as_view()),
+    path('categories/', CategoryEndpoints.as_view()),
 ]
