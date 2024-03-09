@@ -43,7 +43,6 @@ class Command(BaseCommand):
         for transaction in data:
             Transaction.objects.create(
                 type=transaction["type"],
-                productsJson=transaction["productsJson"],
                 dateValidation=timezone.now(),
                 total=transaction["total"],
                 dateAjout=timezone.now(),

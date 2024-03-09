@@ -4,6 +4,29 @@ from quickstart.models import Produit, Category
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
+        categories = [
+            {
+                "nom": "Poisson",
+                "dateAjout": "2024-03-07T16:45:00.070351",
+                "dateModif": "2024-03-07T16:45:00.070351"
+            },
+            {
+                "nom": "Fruits de mer",
+                "dateAjout": "2024-03-07T16:45:00.070351",
+                "dateModif": "2024-03-07T16:45:00.070351"
+            },
+            {
+                "nom": "Crustacés",
+                "dateAjout": "2024-03-07T16:45:00.070351",
+                "dateModif": "2024-03-07T16:45:00.070351"
+            }
+        ]
+        for category in categories:
+            Category.objects.create(
+                nom=category["nom"],
+                dateAjout=category["dateAjout"],
+                dateModif=category["dateModif"]
+            )
         data = [
             {
                 "nom": "Saumon",
