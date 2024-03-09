@@ -19,7 +19,7 @@ class CAEndpoints(APIView):
             params['category'] = category
         if produit:
             params['Produit'] = produit
-        if sale:
+        if sale == 'true':
             params['sale'] = True
 
         transactionProduits = CAService.getTransactionProduitsBy(**params)
