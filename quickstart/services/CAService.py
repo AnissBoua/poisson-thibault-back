@@ -51,9 +51,9 @@ class CAService():
             }
 
             if category:
-                base_query['produit__category__nom'] = category
+                base_query['produit__category__id'] = category
             elif produit:
-                base_query['produit__nom'] = produit
+                base_query['produit__id'] = produit
             if sale:
                 base_query['prixSolde__isnull'] = False
             transaction_produits = TransactionProduit.objects.filter(**base_query)
@@ -64,9 +64,9 @@ class CAService():
             }
 
             if category:
-                base_query['produit__category__nom'] = category
+                base_query['produit__category__id'] = category
             elif produit:
-                base_query['produit__nom'] = produit
+                base_query['produit__id'] = produit
             if sale:
                 base_query['prixSolde__isnull'] = False
                 

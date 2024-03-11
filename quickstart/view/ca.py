@@ -18,7 +18,7 @@ class CAEndpoints(APIView):
         if category:
             params['category'] = category
         if produit:
-            params['Produit'] = produit
+            params['produit'] = produit
         if sale == 'true':
             params['sale'] = True
 
