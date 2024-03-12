@@ -9,6 +9,9 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 class CAEndpoints(APIView):
     def get(self, request, pk=None, format=None):
+        if request.GET.get('mounthly_ca') == 'true':
+            return self.get_mounth_ca(request)
+
         startStr = request.GET.get('start')
         endStr = request.GET.get('end')
         category = request.GET.get('category')
@@ -31,4 +34,8 @@ class CAEndpoints(APIView):
         async_to_sync(channel_layer.group_send)("ca_group", {"type": "send_message", "message": "Nouveau CA"})
         
         return Response(cas)
+    
+    def get_mounth_ca(self, request):
+        mounth_ca = CAService.getThisMounthCA()
+        return Response(mounth_ca)
         

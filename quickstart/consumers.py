@@ -23,8 +23,4 @@ class WSConsumer(WebsocketConsumer):
         }))
     
     def send_message(self, event):
-        message = event
-        print("Message sent", message)
-        self.send(text_data=json.dumps({
-            'message': message
-        }))
+        self.send(text_data=event['message'])
