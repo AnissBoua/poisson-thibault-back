@@ -8,6 +8,7 @@ from quickstart.models import Transaction
 from quickstart.models import TransactionProduit
 from math import ceil
 from datetime import datetime
+from quickstart.services.CAService import CAService
 
 class ProduitEndpoints(APIView):
     def get(self, request, pk=None, format=None):
@@ -88,6 +89,8 @@ class ProduitsUpdates(APIView):
                 transaction_produit.save()
             # Besoin de sauvegarder 2 fois, la première fois pour avoir l'id de la transaction, la deuxième fois pour avoir le total
             transactions[type]['transaction'].save()
+        
+        CAService.getThisMounthCA()
 
         produits = ProduitSerializer(produits, many=True).data
         return Response(produits)

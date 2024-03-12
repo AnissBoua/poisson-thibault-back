@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from quickstart.model.transactionProduit import TransactionProduit
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from calendar import monthrange
 
 class CAService():
     def getDateRange(startStr, endStr):
@@ -116,6 +117,48 @@ class CAService():
         yearly_ca = CAService.getYearlyCa(year)
 
         return yearly_ca - yearly_invoice
+    
+    def getTrimesterInvoice(year, trimester):
+        start = datetime(year, (trimester-1)*3+1, 1)
+        _,last_day = monthrange(year, trimester*3)
+        end = datetime(year, trimester*3, last_day)
+        start_str = start.strftime("%Y-%m-%d")
+        end_str = end.strftime("%Y-%m-%d")
+        transactionProduits = CAService.getTransactionProduitsBy(start_str=start_str, end_str=end_str, type="achat")
+        cas = CAService.getCA(transactionProduits, start, end)
+        trimester_invoice = CAService.getCaNumber(cas)
+        return trimester_invoice
+    
+    def getTrimesterCa(year, trimester):
+        start = datetime(year, (trimester-1)*3+1, 1)
+        _,last_day = monthrange(year, trimester*3)
+        end = datetime(year, trimester*3, last_day)
+        start_str = start.strftime("%Y-%m-%d")
+        end_str = end.strftime("%Y-%m-%d")
+        transactionProduits = CAService.getTransactionProduitsBy(start_str=start_str, end_str=end_str)
+        cas = CAService.getCA(transactionProduits, start, end)
+        trimester_ca = CAService.getCaNumber(cas)
+        return trimester_ca
+    
+    def getTrimesterMargin(year, trimester):
+        trimester_invoice = CAService.getTrimesterInvoice(year, trimester)
+        trimester_ca = CAService.getYearlyCa(year)
+        return trimester_ca - trimester_invoice
+    
+    def getAverageMarginLasts6Trimesters(year, trimester):
+        margin = 0
+        trimester -= 1
+        if (trimester == 0):
+            trimester = 4
+            year -= 1 
+
+        for i in range(1, 6):
+            margin += CAService.getTrimesterMargin(year, trimester)
+            if (trimester == 1):
+                trimester = 5
+                year -= 1 
+            trimester -= 1
+        return margin / 6
     
     def getYearlyCategoryRepartition(year):
         start = datetime(year, 1, 1)

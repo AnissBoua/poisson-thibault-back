@@ -17,6 +17,9 @@ class CAEndpoints(APIView):
         
         if request.GET.get('repartition') != None:
             return self.getYearlyCategoryRepartition(request)
+        
+        if request.GET.get('trimester') != None and request.GET.get('year') != None:
+            return self.getTrimesterMargin(request)
 
         startStr = request.GET.get('start')
         endStr = request.GET.get('end')
@@ -43,6 +46,7 @@ class CAEndpoints(APIView):
     
     def get_mounth_ca(self, request):
         mounth_ca = CAService.getThisMounthCA()
+        
         return Response(mounth_ca)
     
     def get_margin(self, request):
@@ -52,10 +56,24 @@ class CAEndpoints(APIView):
             "margin": margin,
             "taxes" : margin * 0.3,
         }
+
         return Response(response)
     
     def getYearlyCategoryRepartition(self, request):
         year = int(request.GET.get('repartition'))
         repartition = CAService.getYearlyCategoryRepartition(year)
+
         return Response(repartition)
+    
+    def getTrimesterMargin(self, request):
+        year = int(request.GET.get('year'))
+        trimester = int(request.GET.get('trimester'))
+        margin = CAService.getTrimesterMargin(year, trimester)
+        averageMargin6lastSTrimesters = CAService.getAverageMarginLasts6Trimesters(year, trimester)
+        response = {
+            "margin": margin,
+            "averageMargin" : averageMargin6lastSTrimesters,
+        }
+
+        return Response(response)
         
