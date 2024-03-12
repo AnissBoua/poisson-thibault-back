@@ -7,6 +7,7 @@ class Transaction(models.Model):
     class Type(models.TextChoices):
         VENTE = 'vente'
         ACHAT = 'achat'
+        PEREMPTION = 'peremption'
     type = models.CharField(max_length=100, choices=Type.choices, default=Type.VENTE)
 
     dateValidation = models.DateTimeField()

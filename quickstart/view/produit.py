@@ -4,7 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from quickstart.models import Produit
 from quickstart.serializer.produit import ProduitSerializer
+from quickstart.models import Transaction
+from quickstart.models import TransactionProduit
 from math import ceil
+from datetime import datetime
 
 class ProduitEndpoints(APIView):
     def get(self, request, pk=None, format=None):
@@ -40,19 +43,44 @@ class ProduitsUpdates(APIView):
 
         ids = list(data.keys())
         produits = Produit.objects.filter(id__in=ids)
+        transactions = {}
         for produit in produits:
             produitData = data[produit.id]
-            if 'stockChange' in produitData:
-                if produitData['stockChange'] == 'achat':
-                    produit.stock += produitData['stock']
-                else:
-                    produit.stock -= produitData['stock']
-            
             if produitData['prixSolde'] is not None and produitData['prixSolde'] != produit.prixSolde:
                 produit.prixSolde = produitData['prixSolde']
                 produit.onSale = True
 
+            if 'stockChange' in produitData:
+                if (transactions is None or produitData['stockChange'] not in transactions):
+                    transactions[produitData['stockChange']] = {}
+                    transactions[produitData['stockChange']]['produits'] = []
+                    transactions[produitData['stockChange']]['transaction'] = Transaction()
+                    transactions[produitData['stockChange']]['transaction'].type = produitData['stockChange']
+
+                transaction_produit = TransactionProduit()
+                transaction_produit.prix = produit.prix
+                transaction_produit.quantity = abs(produitData['stock'] - produit.stock)
+                transaction_produit.prixSolde = produit.prixSolde
+                transaction_produit.ca = round(transaction_produit.quantity * (produit.prixSolde if produit.prixSolde is not None else produit.prix), 2)
+                transaction_produit.transaction = transactions[produitData['stockChange']]['transaction']
+                transaction_produit.produit = produit
+                transactions[produitData['stockChange']]['produits'].append(transaction_produit)
+
+                # produitData['stock'] contient la nouvelle valeur du stock
+                produit.stock = produitData['stock']
+
             produit.save()
+
+        for type in transactions:
+            transactions[type]['transaction'].total = 0
+            transactions[type]['transaction'].dateValidation = datetime.now()
+            transactions[type]['transaction'].save()
+            for transaction_produit in transactions[type]['produits']:
+                transactions[type]['transaction'].total += transaction_produit.ca
+                transaction_produit.save()
+            # Besoin de sauvegarder 2 fois, la première fois pour avoir l'id de la transaction, la deuxième fois pour avoir le total
+            transactions[type]['transaction'].save()
+
         produits = ProduitSerializer(produits, many=True).data
         return Response(produits)
         
