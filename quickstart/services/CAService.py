@@ -117,6 +117,25 @@ class CAService():
 
         return yearly_ca - yearly_invoice
     
+    def getYearlyCategoryRepartition(year):
+        start = datetime(year, 1, 1)
+        end = datetime(year, 12, 31)
+        start_str = start.strftime("%Y-%m-%d")
+        end_str = end.strftime("%Y-%m-%d")
+        transactionProduits = CAService.getTransactionProduitsBy(start_str=start_str, end_str=end_str)
+        cas = CAService.getCA(transactionProduits, start, end)
+        categoryRepartition = {}
+        for elem in cas:
+            date = elem['date']
+            for transactionProduit in transactionProduits:
+                if transactionProduit.transaction.dateValidation.date().strftime("%Y-%m-%d") == date:
+                    category = transactionProduit.produit.category.nom
+                    if category in categoryRepartition:
+                        categoryRepartition[category] += transactionProduit.ca
+                    else:
+                        categoryRepartition[category] = transactionProduit.ca
+        return categoryRepartition
+    
     def getCaNumber(cas):
         ca = 0
         for elem in cas:

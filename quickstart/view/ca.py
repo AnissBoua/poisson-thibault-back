@@ -14,6 +14,9 @@ class CAEndpoints(APIView):
         
         if request.GET.get('margin') != None:
             return self.get_margin(request)
+        
+        if request.GET.get('repartition') != None:
+            return self.getYearlyCategoryRepartition(request)
 
         startStr = request.GET.get('start')
         endStr = request.GET.get('end')
@@ -50,4 +53,9 @@ class CAEndpoints(APIView):
             "taxes" : margin * 0.3,
         }
         return Response(response)
+    
+    def getYearlyCategoryRepartition(self, request):
+        year = int(request.GET.get('repartition'))
+        repartition = CAService.getYearlyCategoryRepartition(year)
+        return Response(repartition)
         
