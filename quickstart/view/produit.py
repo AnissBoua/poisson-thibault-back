@@ -13,6 +13,8 @@ class ProduitEndpoints(APIView):
     def get(self, request, pk=None, format=None):
         if pk is not None:
             return self.getOne(request, pk, format)
+        if request.GET.get('search') is not None:
+            return self.search(request, format)
         return self.getAll(request, format)
     
     def getOne(self, request, pk, format=None):
@@ -34,6 +36,12 @@ class ProduitEndpoints(APIView):
             'last': ceil(total / int(limit))
         }
         return Response(res)
+    
+    def search(self, request, format=None):
+        search = request.GET.get('search')
+        produits = Produit.objects.filter(nom__icontains=search)
+        
+        return Response(produits.values())
     
 class ProduitsUpdates(APIView):
     def patch(self, request, format=None):

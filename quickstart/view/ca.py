@@ -2,11 +2,16 @@ import json
 from django.core import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from quickstart.consumers import WSConsumer
 from quickstart.models import TransactionProduit
 from quickstart.services.CAService import CAService
-
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 class CAEndpoints(APIView):
     def get(self, request, pk=None, format=None):
+        if request.GET.get('mounthly_ca') == 'true':
+            return self.get_mounth_ca(request)
+
         startStr = request.GET.get('start')
         endStr = request.GET.get('end')
         category = request.GET.get('category')
@@ -18,13 +23,19 @@ class CAEndpoints(APIView):
         if category:
             params['category'] = category
         if produit:
-            params['Produit'] = produit
+            params['produit'] = produit
         if sale == 'true':
             params['sale'] = True
 
         transactionProduits = CAService.getTransactionProduitsBy(**params)
                 
         cas = CAService.getCA(transactionProduits, startStr, endStr)
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)("ca_group", {"type": "send_message", "message": "Nouveau CA"})
         
         return Response(cas)
+    
+    def get_mounth_ca(self, request):
+        mounth_ca = CAService.getThisMounthCA()
+        return Response(mounth_ca)
         
