@@ -101,6 +101,22 @@ class CAService():
         year_invoice = CAService.getCaNumber(cas)
         return year_invoice
     
+    def getYearlyCa(year):
+        start = datetime(year, 1, 1)
+        end = datetime(year, 12, 31)
+        start_str = start.strftime("%Y-%m-%d")
+        end_str = end.strftime("%Y-%m-%d")
+        transactionProduits = CAService.getTransactionProduitsBy(start_str=start_str, end_str=end_str)
+        cas = CAService.getCA(transactionProduits, start, end)
+        year_ca = CAService.getCaNumber(cas)
+        return year_ca
+    
+    def getYearlyMargin(year):
+        yearly_invoice = CAService.getYearlyInvoice(year)
+        yearly_ca = CAService.getYearlyCa(year)
+
+        return yearly_ca - yearly_invoice
+    
     def getCaNumber(cas):
         ca = 0
         for elem in cas:
