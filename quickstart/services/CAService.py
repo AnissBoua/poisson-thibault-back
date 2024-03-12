@@ -142,7 +142,7 @@ class CAService():
     
     def getTrimesterMargin(year, trimester):
         trimester_invoice = CAService.getTrimesterInvoice(year, trimester)
-        trimester_ca = CAService.getYearlyCa(year)
+        trimester_ca = CAService.getTrimesterCa(year, trimester)
         return trimester_ca - trimester_invoice
     
     def getAverageMarginLasts6Trimesters(year, trimester):
