@@ -11,6 +11,9 @@ class CAEndpoints(APIView):
     def get(self, request, pk=None, format=None):
         if request.GET.get('mounthly_ca') == 'true':
             return self.get_mounth_ca(request)
+        
+        if request.GET.get('margin') != None:
+            return self.get_margin(request)
 
         startStr = request.GET.get('start')
         endStr = request.GET.get('end')
@@ -38,4 +41,13 @@ class CAEndpoints(APIView):
     def get_mounth_ca(self, request):
         mounth_ca = CAService.getThisMounthCA()
         return Response(mounth_ca)
+    
+    def get_margin(self, request):
+        year = int(request.GET.get('margin'))
+        margin = CAService.getYearlyMargin(year)
+        response = {
+            "margin": margin,
+            "taxes" : margin * 0.3,
+        }
+        return Response(response)
         
