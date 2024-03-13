@@ -40,9 +40,19 @@ class ProduitEndpoints(APIView):
     
     def search(self, request, format=None):
         search = request.GET.get('search')
+        limit = request.GET.get('limit', 10)
+        page = request.GET.get('page', 1)
         produits = Produit.objects.filter(nom__icontains=search)
-        
-        return Response(produits.values())
+        total = produits.count()
+
+        res = {
+            'data': ProduitSerializer(produits, many=True).data,
+            'total': total,
+            'limit': limit,
+            'page': page,
+            'last': ceil(total / int(limit))
+        }
+        return Response(res)
     
 class ProduitsUpdates(APIView):
     def patch(self, request, format=None):
