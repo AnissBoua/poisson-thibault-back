@@ -8,9 +8,11 @@ from quickstart.models import Transaction
 from quickstart.models import TransactionProduit
 from math import ceil
 from datetime import datetime
+from rest_framework.permissions import IsAuthenticated
 from quickstart.services.CAService import CAService
 
 class ProduitEndpoints(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, pk=None, format=None):
         if pk is not None:
             return self.getOne(request, pk, format)
@@ -55,6 +57,7 @@ class ProduitEndpoints(APIView):
         return Response(res)
     
 class ProduitsUpdates(APIView):
+    permission_classes = [IsAuthenticated]
     def patch(self, request, format=None):
         data = json.loads(request.body)
         # Reorder data for easy access : [13 => {}, 15 => {}, 14 => {}]
